@@ -36,29 +36,29 @@ describe("Marketplace", function () {
         return {contract, account, account2, account3}
     }
 
-    describe("putForSale", function() {
-        it("Should fail if the owner already has an auction", async function() {
+    describe("putForSale - 40 points", function() {
+        it("Should fail if the owner already has an auction - 5 points", async function() {
             const { contract, account, account2, account3 } = await loadFixture(auctionExistsFixture)
 
             await expect(contract.connect(account).putForSale(MINMUM_BID_AUCTION_EXISTS_FIXTURE, 0)).to.be.reverted
         })
-        it("Should fail if the assetID is invalid", async function() {
+        it("Should fail if the assetID is invalid - 5 points", async function() {
             const { contract, account, account2, account3 } = await loadFixture(deployFixture)
 
             await expect(contract.connect(account).putForSale(MINMUM_BID_AUCTION_EXISTS_FIXTURE,10)).to.be.reverted
         })
-        it("Should fail if the transaction sender is not the owner of the asset", async function() {
+        it("Should fail if the transaction sender is not the owner of the asset - 5 points", async function() {
             const { contract, account, account2, account3 } = await loadFixture(auctionExistsFixture)
 
             await expect(contract.connect(account2).putForSale(MINMUM_BID_AUCTION_EXISTS_FIXTURE,0)).to.be.reverted
         })
-        it("Should increase auctionNumber by 1 after successful auction", async function() {
+        it("Should increase auctionNumber by 1 after successful auction - 5 points", async function() {
             const { contract, account, account2, account3 } = await loadFixture(auctionExistsFixture)
 
             let contractAuctionNumber = await contract.auctionNumber()
             expect(contractAuctionNumber).to.equal(1)            
         })
-        it("Should set idToAuction mapping for auctionNumber", async function() {
+        it("Should set idToAuction mapping for auctionNumber - 6 points", async function() {
             const { contract, account, account2, account3 } = await loadFixture(auctionExistsFixture)
 
             let auctionContractAddress = await contract.idToAuction(1)
@@ -70,21 +70,21 @@ describe("Marketplace", function () {
             expect(beneficiary).to.equal(account)
             expect(minimumBid).to.equal(MINMUM_BID_AUCTION_EXISTS_FIXTURE)
         })
-        it("Should set ownerToAuctionId mapping for transaction sender", async function() {
+        it("Should set ownerToAuctionId mapping for transaction sender - 7 points", async function() {
             const { contract, account, account2, account3 } = await loadFixture(auctionExistsFixture)
 
             let auctionNumber = await contract.ownerToAuctionId(account)
             expect(auctionNumber).to.equal(1)
         })
-        it("Should set auctionToObject mapping for auctionNumber", async function() {
+        it("Should set auctionToObject mapping for auctionNumber - 7 points", async function() {
             const { contract, account, account2, account3 } = await loadFixture(auctionExistsFixture)
 
             let assetId = await contract.auctionToObject(1)
             expect(assetId).to.equal(0)
         })
     })
-    describe("bid", function() {
-        it("Should bid for the auction correlated with the assetId", async function() {
+    describe("bid - 30 points", function() {
+        it("Should bid for the auction correlated with the assetId - 30 points", async function() {
             const { contract, account, account2, account3 } = await loadFixture(auctionExistsFixture)
 
             //make two bids, then check auction contract max bidder and min bid, no need to check payments?
@@ -101,8 +101,8 @@ describe("Marketplace", function () {
             expect(minimumBid).to.equal(15)
         })
     })
-    describe("settleAuction", function() {
-        it("Should end the auction if called successfully", async function() {
+    describe("settleAuction - 30 points", function() {
+        it("Should end the auction if called successfully - 10 points", async function() {
             const { contract, account, account2, account3 } = await loadFixture(auctionHasBidsFixture)
 
             await contract.connect(account).settleAuction(1)
@@ -112,7 +112,7 @@ describe("Marketplace", function () {
             let ended = await auctionContract.auctionEnded();
             expect(ended).to.equal(true)
         })
-        it("Should transfer the asset to the max bidder if called successfully", async function() {
+        it("Should transfer the asset to the max bidder if called successfully - 10 points", async function() {
             const { contract, account, account2, account3 } = await loadFixture(auctionHasBidsFixture)
 
             await contract.connect(account).settleAuction(1)
