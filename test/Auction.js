@@ -35,8 +35,8 @@ describe("Auction", function () {
         return {contract, beneficiary, otherAccount, otherAccount2 }
     }
 
-    describe("Constructor - 10 points", function () {
-        it("Should set minimumBid and beneficiary to values passed into constructor (+10 points)", async function () {
+    describe("Constructor", function () {
+        it("Should set minimumBid and beneficiary to values passed into constructor", async function () {
             const [beneficiary, otherAccount] = await ethers.getSigners();
   
             const AuctionFacotory = await ethers.getContractFactory("Auction");
@@ -50,25 +50,25 @@ describe("Auction", function () {
         })
     })
 
-    describe("Bid - 40 points", function () {
-        it("Should not allow the current maxBidder to bid again (+6 points)", async function() {
+    describe("Bid", function () {
+        it("Should not allow the current maxBidder to bid again", async function() {
             const { contract, beneficiary, otherAccount, otherAccount2} = await loadFixture(bidAlreadySubmittedFixture)
             await expect(contract.connect(otherAccount).bid( {value: INITIAL_BID_VALUE + 1})).to.be.reverted
 
         })
-        it("Should fail if the value sent is not greater than the required minimum bid (+6 points)", async function() {
+        it("Should fail if the value sent is not greater than the required minimum bid", async function() {
             const { contract, beneficiary, otherAccount, otherAccount2} = await loadFixture(bidAlreadySubmittedFixture)
             let bid = (await contract.minimumBid()) - BigInt(1)
             await expect(contract.connect(otherAccount).bid( {value: bid})).to.be.reverted
 
         })
-        it("Should not allow bids if the auction has already ended (+6 points)", async function() {
+        it("Should not allow bids if the auction has already ended", async function() {
             const { contract, beneficiary, otherAccount, otherAccount2} = await loadFixture(auctionEndedFixture)
 
             await expect(contract.connect(otherAccount2).bid( {value: INITIAL_BID_VALUE + 1})).to.be.reverted
 
         })
-        it("Should not transfer any funds if bid is called the first time (+6 points)", async function() {
+        it("Should not transfer any funds if bid is called the first time", async function() {
             const { contract, beneficiary, otherAccount, otherAccount2} = await loadFixture(deployFixture)
 
             await expect(contract.connect(otherAccount).bid({value: INITIAL_BID_VALUE})).to.changeEtherBalances(
@@ -76,7 +76,7 @@ describe("Auction", function () {
                 [INITIAL_BID_VALUE, -INITIAL_BID_VALUE, 0]
             );
         })
-        it("Should transfer funds if bid is called and conditions satisfied (+10 points)", async function() {
+        it("Should transfer funds if bid is called and conditions satisfied", async function() {
             const { contract, beneficiary, otherAccount, otherAccount2} = await loadFixture(bidAlreadySubmittedFixture)
 
             await expect(contract.connect(otherAccount2).bid({value: INITIAL_BID_VALUE + 1})).to.changeEtherBalances(
@@ -84,7 +84,7 @@ describe("Auction", function () {
                 [1, -INITIAL_BID_VALUE - 1, INITIAL_BID_VALUE]
             );
         })
-        it("Should set minimumBid and maxBidder to new values after a bid (+6 points)", async function() {
+        it("Should set minimumBid and maxBidder to new values after a bid", async function() {
             const { contract, beneficiary, otherAccount, otherAccount2} = await loadFixture(bidAlreadySubmittedFixture)
             let contractMinimumBid = await contract.minimumBid()
             let contractMaxBidder = await contract.maxBidder()
@@ -94,18 +94,18 @@ describe("Auction", function () {
         })
     })
 
-    describe("settleAuction - 40 points", function() {
-        it("Should only allow beneficiary to settle auction (+10 points)", async function() {
+    describe("settleAuction", function() {
+        it("Should only allow beneficiary to settle auction", async function() {
             const { contract, beneficiary, otherAccount, otherAccount2} = await loadFixture(bidAlreadySubmittedFixture)
             
             await expect(contract.connect(otherAccount).settleAuction()).to.be.reverted
         })
-        it("Should revert if called after auction has already ended (+10 points)", async function() {
+        it("Should revert if called after auction has already ended", async function() {
             const { contract, beneficiary, otherAccount, otherAccount2} = await loadFixture(auctionEndedFixture)
             
             await expect(contract.connect(beneficiary).settleAuction()).to.be.reverted
         })
-        it("Should set maxBidder to beneficiary and change no balances if no one bidded before auction ended (+10 points)", async function() {
+        it("Should set maxBidder to beneficiary and change no balances if no one bidded before auction ended", async function() {
             const { contract, beneficiary, otherAccount, otherAccount2} = await loadFixture(deployFixture)
             
             await expect(contract.connect(beneficiary).settleAuction()).to.changeEtherBalances(
@@ -118,7 +118,7 @@ describe("Auction", function () {
             let contractSettleAuction = await contract.auctionEnded()
             expect(contractSettleAuction).to.equal(true)
         })
-        it("Should transfer payment to beneficiary and end auction if bids were submitted before settleAuction is called (+10 points)", async function() {
+        it("Should transfer payment to beneficiary and end auction if bids were submitted before settleAuction is called", async function() {
             const { contract, beneficiary, otherAccount, otherAccount2} = await loadFixture(bidAlreadySubmittedFixture)
             let contractMaxBidder = await contract.maxBidder();
             await expect(contract.connect(beneficiary).settleAuction()).to.changeEtherBalances(
